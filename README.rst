@@ -11,6 +11,9 @@ A module that makes GstBase.BaseTransform python-compatible
 Source code repository and issue tracker:
    https://github.com/Muges/gstbasetransform/
 
+Python Package Index:
+    https://pypi.python.org/pypi/gstbasetransform/
+
 License:
    LGPL 2.1 -- see the file ``LICENSE`` for details.
 
