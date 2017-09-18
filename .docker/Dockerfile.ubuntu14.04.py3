@@ -13,4 +13,4 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python3-gst-1.0
 
 COPY requirements.txt /
-RUN pip install -r /requirements.txt
+RUN pip3 install -r /requirements.txt
