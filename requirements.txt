@@ -1,0 +1,5 @@
+check-manifest
+pycodestyle
+pylint
+six
+vext.gi

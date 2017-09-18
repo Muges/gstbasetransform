@@ -1,0 +1,19 @@
+language: python
+
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+      language: python
+      python: "2.7_with_system_site_packages"
+      env: PACKAGES="gir1.2-gtk-3.0 python-gi python-gst" PYTHON="python"
+    - os: linux
+      sudo: required
+      dist: trusty
+      language: python
+      python: "3.4_with_system_site_packages"
+      env: PACKAGES="gir1.2-gtk-3.0 python3-gi python3-gst" PYTHON="python3"
+
+install: pip install tox-travis
+script: tox
