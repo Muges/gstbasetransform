@@ -1,23 +1,49 @@
-language: python
+# Copyright (c) 2017 Christoph Reiter
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
 
-matrix:
-  include:
-    - os: linux
-      sudo: required
-      dist: trusty
-      language: python
-      python: "2.7_with_system_site_packages"
-      env: PACKAGES="gir1.2-glib-2.0 gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0 gstreamer1.0-plugins-base python-gi python-gst-1.0" PYTHON="python"
-    - os: linux
-      sudo: required
-      dist: trusty
-      language: python
-      python: "3.4_with_system_site_packages"
-      env: PACKAGES="gir1.2-glib-2.0 gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0 gstreamer1.0-plugins-base python3-gi python3-gst-1.0" PYTHON="python3"
+sudo: required
+services: docker
+language: generic
+env:
+  - DOCKER_FILE="Dockerfile.debian9.py2" PYTHON="python"
+  - DOCKER_FILE="Dockerfile.debian9.py3" PYTHON="python3"
+  - DOCKER_FILE="Dockerfile.ubuntu16.04.py2" PYTHON="python"
+  - DOCKER_FILE="Dockerfile.ubuntu16.04.py3" PYTHON="python3"
+  - DOCKER_FILE="Dockerfile.ubuntu16.10.py2" PYTHON="python"
+  - DOCKER_FILE="Dockerfile.ubuntu16.10.py3" PYTHON="python3"
 
-install:
-  - sudo apt-get update -q
-  - sudo apt-get install --no-install-recommends -y $(echo $PACKAGES)
-  - pip install tox-travis
+before_install:
+  # Create a docker image called "myimage"
+  - docker build -t myimage -f ".docker/$DOCKER_FILE" .
 
-script: tox
+before_script:
+  # create a docker container from the image, mount the current working
+  # directory to /app inside the container and let the container running
+  # in the background. The resulting container ID will be saved to
+  # container_id so we can reference it later on.
+  - docker run --volume "$(pwd):/app" --workdir "/app" --tty --detach myimage bash > container_id
+
+script:
+  # run our tests in the running contained
+  - docker exec "$(cat container_id)" "$PYTHON" test_gstbasetransform.py
+
+after_script:
+  # stop the container
+- docker stop "$(cat container_id)"
