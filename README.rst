@@ -1,6 +1,10 @@
 A module that makes GstBase.BaseTransform python-compatible
 ===========================================================
 
+.. image:: https://travis-ci.org/Muges/gstbasetransform.svg?branch=master
+    :target: https://travis-ci.org/Muges/gstbasetransform
+    :alt: Build Status
+
 ``gstbasetransform`` is a module that aims to provide a patched
 ``GstBase.BaseTransform`` class usable from python.
 
